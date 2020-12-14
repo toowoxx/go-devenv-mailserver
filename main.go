@@ -54,7 +54,7 @@ func (s *Session) Data(r io.Reader) error {
 			},
 		)
 		log.Print("data received, writing to file")
-		f, err := ioutil.TempFile("", "ordify-debug-mail-*.html")
+		f, err := ioutil.TempFile("", "devenv-mailserver-debug-mail-*.html")
 		if err != nil {
 			return err
 		}
