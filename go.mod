@@ -1,4 +1,4 @@
-module git.toowoxx.de/twxorder/backend
+module git.toowoxx.de/toowoxx/utilities/devenv-mailserver
 
 go 1.15
 
