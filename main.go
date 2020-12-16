@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -58,7 +59,12 @@ func (s *Session) Data(r io.Reader) error {
 		if err != nil {
 			return err
 		}
-		qpReader := quotedprintable.NewReader(strings.NewReader(email.HTMLBody))
+		qpReader := quotedprintable.NewReader(
+			bufio.NewReaderSize(
+				strings.NewReader(email.HTMLBody),
+				maxMessageBytes,
+			),
+		)
 		qpStrBytes, err := ioutil.ReadAll(qpReader)
 		if err != nil {
 			return err
@@ -81,6 +87,8 @@ func (s *Session) Logout() error {
 	return nil
 }
 
+const maxMessageBytes = 262144 * 1024
+
 // main starts a simple and permissive mail server
 // that saves received mail to disk and opens it in the browser
 func main() {
@@ -92,7 +100,7 @@ func main() {
 	s.Domain = "localhost"
 	s.ReadTimeout = 10 * time.Second
 	s.WriteTimeout = 10 * time.Second
-	s.MaxMessageBytes = 4096 * 1024
+	s.MaxMessageBytes = maxMessageBytes
 	s.MaxRecipients = 50
 	s.AllowInsecureAuth = true
 	s.EnableSMTPUTF8 = true
