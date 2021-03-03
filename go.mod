@@ -1,6 +1,6 @@
 module git.toowoxx.de/toowoxx/utilities/devenv-mailserver
 
-go 1.15
+go 1.16
 
 require (
 	github.com/DusanKasan/parsemail v1.2.0
