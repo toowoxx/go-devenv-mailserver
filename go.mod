@@ -1,4 +1,4 @@
-module git.toowoxx.de/toowoxx/utilities/devenv-mailserver
+module github.com/toowoxx/go-devenv-mailserver
 
 go 1.16
 
