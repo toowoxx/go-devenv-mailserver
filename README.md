@@ -6,6 +6,17 @@ This starts a local mailserver which you can use to send mails to via SMTP when
 doing local development. This mailserver will save the mails to a temporary directory
 and open them up in your browser.
 
+## Usage
+
+Install this app using Go:
+
+```
+go install github.com/toowoxx/go-devenv-mailserver@latest
+```
+
+And run it using the command `go-devenv-mailserver`.
+
+Alternatively, you can also clone the repository and use `go run .`.
 
 ## License
 
