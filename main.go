@@ -2,18 +2,35 @@ package main
 
 import (
 	"bufio"
+	_ "embed"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"mime/quotedprintable"
+	"os"
+	"path"
 	"strings"
+	"text/template"
 	"time"
 
 	"github.com/DusanKasan/parsemail"
 	"github.com/emersion/go-smtp"
 	"github.com/skratchdot/open-golang/open"
+	"github.com/toowoxx/go-lib-fs/fs"
 )
+
+//go:embed attachments.html
+var attachmentsHtmlTemplate string
+
+type AttachmentTemplateAttachment struct {
+	Href string
+	FileName string
+}
+
+type AttachmentTemplateOptions struct {
+	Title string
+	Attachments []AttachmentTemplateAttachment
+}
 
 // The Backend implements SMTP server methods.
 type Backend struct{}
@@ -55,30 +72,88 @@ func (s *Session) Data(r io.Reader) error {
 			},
 		)
 		log.Print("data received, writing to file")
-		f, err := ioutil.TempFile("", "devenv-mailserver-debug-mail-*.html")
+		f, err := os.CreateTemp("", "devenv-mailserver-debug-mail-*.html")
 		if err != nil {
 			return err
 		}
-		qpReader := quotedprintable.NewReader(
-			bufio.NewReaderSize(
-				strings.NewReader(email.HTMLBody),
-				maxMessageBytes,
-			),
-		)
-		qpStrBytes, err := ioutil.ReadAll(qpReader)
-		if err != nil {
-			return err
-		}
-		if _, err = f.Write(qpStrBytes); err != nil {
-			return err
+
+		if len(email.HTMLBody) > 0 {
+			qpReader := quotedprintable.NewReader(
+				bufio.NewReaderSize(
+					strings.NewReader(email.HTMLBody),
+					maxMessageBytes,
+				),
+			)
+			_, err := io.Copy(f, qpReader)
+			if err != nil {
+				return err
+			}
+		} else {
+			_, err := f.WriteString(fmt.Sprintf(
+				"<!doctype html><html><head><meta charset=\"utf-8\"></head><body><pre>%s</pre></body></html>",
+				email.TextBody))
+			if err != nil {
+				return err
+			}
 		}
 		if err = f.Close(); err != nil {
 			return err
 		}
 		log.Printf("Temporary file %s has been created", f.Name())
 		log.Print("Starting default browser...")
-		return open.Start(fmt.Sprintf("file://%s", f.Name()))
+		if err := open.Start(fmt.Sprintf("file://%s", f.Name())); err != nil {
+			return err
+		}
+
+		if len(email.Attachments) > 0 {
+			log.Print("Processing attachments...")
+			tpl, err := template.New("attachments").Parse(attachmentsHtmlTemplate)
+			if err != nil {
+				return err
+			}
+
+			options := AttachmentTemplateOptions{}
+			options.Title = email.Subject
+
+			for _, attachment := range email.Attachments {
+				log.Printf("Processing attachment %s", attachment.Filename)
+				f, err := os.CreateTemp("", fmt.Sprintf("%s-*.%s",
+						fs.RemoveExtension(attachment.Filename), path.Ext(attachment.Filename)))
+				if err != nil {
+					return err
+				}
+
+				_, err = io.Copy(f, attachment.Data)
+				if err != nil {
+					return err
+				}
+
+				options.Attachments = append(options.Attachments, AttachmentTemplateAttachment{
+					Href:     f.Name(),
+					FileName: attachment.Filename,
+				})
+
+				_ = f.Close()
+			}
+
+			log.Print("Creating attachment file")
+			f, err := os.CreateTemp("", "devenv-mailserver-debug-attach-*.html")
+			if err != nil {
+				return err
+			}
+			if err := tpl.Execute(f, options); err != nil {
+				return err
+			}
+
+			_ = f.Close()
+
+			log.Print("Opening attachment page in browser...")
+			if err := open.Start(fmt.Sprintf("file://%s", f.Name())); err != nil {
+				return err
+			}
+		}
 	}
+	return nil
 }
 
 func (s *Session) Reset() {}

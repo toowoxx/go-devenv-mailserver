@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{{ .Title }}</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+<body>
+<h1>E-Mail Attachments</h1>
+<h2>Subject: {{ .Title }}</h2>
+<hr>
+{{ range $index, $attachment := .Attachments }}
+<a href="{{ $attachment.Href }}" target="_blank">{{ $attachment.FileName }}</a>
+{{ end }}
+</body>
+</html>
