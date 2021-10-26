@@ -117,7 +117,7 @@ func (s *Session) Data(r io.Reader) error {
 
 			for _, attachment := range email.Attachments {
 				log.Printf("Processing attachment %s", attachment.Filename)
-				f, err := os.CreateTemp("", fmt.Sprintf("%s-*.%s",
+				f, err := os.CreateTemp("", fmt.Sprintf("%s-*%s",
 						fs.RemoveExtension(attachment.Filename), path.Ext(attachment.Filename)))
 				if err != nil {
 					return err
