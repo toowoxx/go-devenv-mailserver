@@ -7,5 +7,5 @@ github.com/emersion/go-smtp v0.15.0 h1:3+hMGMGrqP/lqd7qoxZc1hTU8LY8gHV9RFGWlqSDm
 github.com/emersion/go-smtp v0.15.0/go.mod h1:qm27SGYgoIPRot6ubfQ/GpiPy/g3PaZAVRxiO/sDUgQ=
 github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966 h1:JIAuq3EEf9cgbU6AtGPK4CTG3Zf6CKMNqf0MHTggAUA=
 github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966/go.mod h1:sUM3LWHvSMaG192sy56D9F7CNvL7jUJVXoqM1QKLnog=
-github.com/toowoxx/go-lib-fs v1.2.1 h1:GR63RptnBV3AGs2K3m3nXCJSi19HVjOLWTS/uy2WgIE=
-github.com/toowoxx/go-lib-fs v1.2.1/go.mod h1:JgXju9XumnPTNogXV9xfFreEWjahyZSdoRkA9blN3jo=
+github.com/toowoxx/go-lib-fs v1.3.0 h1:ZrOl5O2S3HdQ78+LGjPOvDyKh6RdTjEWMRtvOnwn5Ag=
+github.com/toowoxx/go-lib-fs v1.3.0/go.mod h1:JgXju9XumnPTNogXV9xfFreEWjahyZSdoRkA9blN3jo=
